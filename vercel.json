@@ -4,11 +4,7 @@
   "outputDirectory": "dist/public",
   "functions": {
     "api/index.ts": {
-      "includeFiles": [
-        "server/data/banking77-train.csv",
-        "server/data/banking77-categories.json",
-        "server/data/swebench-verified.json"
-      ]
+      "includeFiles": "server/data/**"
     }
   },
   "rewrites": [
