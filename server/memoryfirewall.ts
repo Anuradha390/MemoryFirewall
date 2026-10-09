@@ -24,9 +24,18 @@ const memories: Memory[] = [
 ];
 
 const dataSource = { id: "banking77", name: "PolyAI Banking77", license: "CC BY 4.0", url: "https://huggingface.co/datasets/PolyAI/banking77", repository: "https://github.com/PolyAI-LDN/task-specific-datasets", description: "13,083 openly licensed online-banking customer-service queries with 77 intents.", loadedAt: new Date().toISOString(), loadedRecords: 0, type: "public_dataset" };
+function findDataFile(fileName: string) {
+  const moduleDir = typeof import.meta.dirname === "string" ? import.meta.dirname : null;
+  const candidates = [path.resolve(process.cwd(), "server/data", fileName)];
+  if (moduleDir) {
+    candidates.push(path.resolve(moduleDir, "../data", fileName));
+    candidates.push(path.resolve(moduleDir, "../../server/data", fileName));
+  }
+  return candidates.find(filePath => fs.existsSync(filePath));
+}
 function loadOpenDataset() {
-  const csvPath = path.resolve(process.cwd(), "server/data/banking77-train.csv");
-  if (!fs.existsSync(csvPath)) return;
+  const csvPath = findDataFile("banking77-train.csv");
+  if (!csvPath) return;
   const lines = fs.readFileSync(csvPath, "utf8").split(/\r?\n/).filter(Boolean);
   const rows = lines.slice(1).map((line) => {
     const comma = line.lastIndexOf(",");
@@ -41,8 +50,8 @@ function loadOpenDataset() {
 loadOpenDataset();
 const developerSource = { id: "swebench-verified", name: "SWE-bench Verified", license: "Open GitHub issue benchmark; see repository licenses", url: "https://huggingface.co/datasets/SWE-bench/SWE-bench_Verified", repository: "https://github.com/SWE-bench/SWE-bench", description: "500 human-validated real GitHub software issues from popular Python repositories.", loadedAt: new Date().toISOString(), loadedRecords: 0, type: "public_developer_dataset" };
 function loadSWEbenchDataset() {
-  const jsonPath = path.resolve(process.cwd(), "server/data/swebench-verified.json");
-  if (!fs.existsSync(jsonPath)) return;
+  const jsonPath = findDataFile("swebench-verified.json");
+  if (!jsonPath) return;
   const rows = JSON.parse(fs.readFileSync(jsonPath, "utf8")) as any[];
   rows.forEach((row, index) => {
     const issue = String(row.problem_statement || "").trim();
