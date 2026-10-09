@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Twin</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #080b14;
+  color: #f5f7ff;
+  min-height: 100vh;
+}
+
+.container {
+  width: min(1100px, 92%);
+  margin: auto;
+  padding: 45px 0;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 8px 15px;
+  border: 1px solid #4d5cff;
+  border-radius: 30px;
+  color: #9da6ff;
+  margin-bottom: 15px;
+  font-size: 13px;
+}
+
+h1 {
+  font-size: clamp(38px, 7vw, 70px);
+  margin-bottom: 10px;
+}
+
+.gradient {
+  background: linear-gradient(90deg, #7c8cff, #c18cff);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  color: #a7adbf;
+  font-size: 18px;
+}
+
+.card {
+  background: #111625;
+  border: 1px solid #252c42;
+  border-radius: 20px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 15px 40px rgba(0,0,0,.25);
+}
+
+textarea {
+  width: 100%;
+  min-height: 150px;
+  resize: vertical;
+  background: #090d18;
+  border: 1px solid #303852;
+  border-radius: 14px;
+  color: white;
+  padding: 18px;
+  font-size: 16px;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #7c8cff;
+}
+
+.examples {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 15px 0;
+}
+
+.example {
+  background: #191f32;
+  color: #cdd2e5;
+  border: 1px solid #303852;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.example:hover {
+  border-color: #7c8cff;
+}
+
+button.primary {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #6675ff, #a46cff);
+  color: white;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.primary:hover {
+  transform: translateY(-2px);
+}
+
+.results {
+  display: none;
+}
+
+.results h2 {
+  margin-bottom: 20px;
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.choice {
+  background: #151b2c;
+  border: 1px solid #2c344c;
+  border-radius: 17px;
+  padding: 20px;
+}
+
+.choice.recommended {
+  border-color: #7c8cff;
+  box-shadow: 0 0 25px rgba(124,140,255,.18);
+}
+
+.choice h3 {
+  margin-bottom: 12px;
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid #252c42;
+  color: #b9bfd0;
+}
+
+.stat strong {
+  color: white;
+}
+
+.consequence {
+  margin-top: 15px;
+  color: #aeb5c8;
+  line-height: 1.5;
+}
+
+.recommendation {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 15px;
+  background: #171d31;
+  border-left: 4px solid #7c8cff;
+}
+
+.matrix {
+  margin-top: 25px;
+  height: 300px;
+  position: relative;
+  border: 1px solid #303852;
+  border-radius: 15px;
+  background:
+    linear-gradient(90deg, transparent 49.5%, #303852 50%, transparent 50.5%),
+    linear-gradient(0deg, transparent 49.5%, #303852 50%, transparent 50.5%);
+}
+
+.axis-x {
+  position: absolute;
+  bottom: 8px;
+  right: 15px;
+  color: #858ca2;
+}
+
+.axis-y {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  color: #858ca2;
+}
+
+.dot {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #9b7cff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.whatif {
+  margin-top: 25px;
+}
+
+select {
+  width: 100%;
+  padding: 13px;
+  background: #090d18;
+  color: white;
+  border: 1px solid #303852;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.whatif-result {
+  margin-top: 15px;
+  padding: 16px;
+  background: #171d31;
+  border-radius: 12px;
+  color: #c2c8d8;
+  line-height: 1.5;
+}
+
+.reset {
+  margin-top: 20px;
+  background: transparent;
+  border: 1px solid #3a425c;
+  color: #cdd2e5;
+  padding: 12px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+footer {
+  text-align: center;
+  margin-top: 40px;
+  color: #646c82;
+  font-size: 13px;
+}
+
+@media(max-width: 800px) {
+  .choices {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+  <div class="badge">DECISION INTELLIGENCE</div>
+  <h1>Decision <span class="gradient">Twin</span></h1>
+  <p class="subtitle">See the consequences before you decide.</p>
+</header>
+
+<section class="card">
+
+<textarea id="scenario"
+placeholder="Describe your situation...&#10;&#10;Example: I have an exam in 3 days, an assignment due tonight and a hackathon tomorrow."></textarea>
+
+<div class="examples">
+  <button class="example" onclick="example(1)">📚 Exam + Assignment</button>
+  <button class="example" onclick="example(2)">💻 Hackathon + College</button>
+  <button class="example" onclick="example(3)">💼 Internship Decision</button>
+</div>
+
+<button class="primary" onclick="analyze()">🔮 Analyze My Decision</button>
+
+</section>
+
+<section class="results" id="results">
+
+<h2>Possible Futures</h2>
+
+<div class="choices">
+
+<div class="choice recommended">
+<h3>🎯 Option A</h3>
+<div class="stat"><span>Impact</span><strong>88/100</strong></div>
+<div class="stat"><span>Urgency</span><strong>95/100</strong></div>
+<div class="stat"><span>Risk</span><strong>28/100</strong></div>
+<div class="stat"><span>Time</span><strong>2 hours</strong></div>
+<p class="consequence">
+Finish the most urgent responsibility first and reduce immediate pressure.
+</p>
+</div>
+
+<div class="choice">
+<h3>⚡ Option B</h3>
+<div class="stat"><span>Impact</span><strong>76/100</strong></div>
+<div class="stat"><span>Urgency</span><strong>70/100</strong></div>
+<div class="stat"><span>Risk</span><strong>48/100</strong></div>
+<div class="stat"><span>Time</span><strong>4 hours</strong></div>
+<p class="consequence">
+You gain progress on a long-term goal but accept some short-term risk.
+</p>
+</div>
+
+<div class="choice">
+<h3>🌱 Option C</h3>
+<div class="stat"><span>Impact</span><strong>64/100</strong></div>
+<div class="stat"><span>Urgency</span><strong>45/100</strong></div>
+<div class="stat"><span>Risk</span><strong>65/100</strong></div>
+<div class="stat"><span>Time</span><strong>6 hours</strong></div>
+<p class="consequence">
+This option may create more pressure later if urgent tasks remain unfinished.
+</p>
+</div>
+
+</div>
+
+<div class="recommendation">
+<strong>💡 Decision Twin recommends Option A</strong>
+<br><br>
+It has the strongest combination of high impact, high urgency and relatively low risk.
+The recommendation is based on a transparent scoring model rather than a black-box decision.
+</div>
+
+<h2 style="margin-top:30px;">⚖️ Impact vs Risk</h2>
+
+<div class="matrix">
+  <span class="axis-x">Higher Impact →</span>
+  <span class="axis-y">Higher Risk ↑</span>
+
+  <div class="dot" style="left:72%;bottom:68%;">A</div>
+  <div class="dot" style="left:55%;bottom:48%;">B</div>
+  <div class="dot" style="left:35%;bottom:25%;">C</div>
+</div>
+
+<div class="whatif">
+
+<h2>🔮 What If?</h2>
+
+<select id="choice" onchange="whatIf()">
+<option value="">Choose a future...</option>
+<option value="A">Option A</option>
+<option value="B">Option B</option>
+<option value="C">Option C</option>
+</select>
+
+<div class="whatif-result" id="whatifResult">
+Select an option to explore its possible future.
+</div>
+
+</div>
+
+<button class="reset" onclick="resetApp()">↩ Try Another Scenario</button>
+
+</section>
+
+<footer>
+Decision Twin • Voice-powered decision exploration
+</footer>
+
+</div>
+
+<script>
+
+function example(type) {
+
+const box = document.getElementById("scenario");
+
+if(type === 1) {
+box.value = "I have an exam in three days, an assignment due tonight and very limited time.";
+}
+
+if(type === 2) {
+box.value = "I have a hackathon tomorrow but I also have important college work to finish.";
+}
+
+if(type === 3) {
+box.value = "I received an internship opportunity but accepting it may affect my studies.";
+}
+
+}
+
+function analyze() {
+
+const scenario = document.getElementById("scenario").value.trim();
+
+if(!scenario) {
+alert("Please describe your decision first.");
+return;
+}
+
+document.getElementById("results").style.display = "block";
+
+document.getElementById("results").scrollIntoView({
+behavior: "smooth"
+});
+
+}
+
+function whatIf() {
+
+const value = document.getElementById("choice").value;
+
+const result = document.getElementById("whatifResult");
+
+if(value === "A") {
+result.innerHTML =
+"<strong>Future A:</strong> You reduce immediate pressure and create more stability. The main benefit is lower short-term risk and clearer focus for your next decision.";
+}
+
+if(value === "B") {
+result.innerHTML =
+"<strong>Future B:</strong> You make strong progress toward a long-term opportunity, but you may need to handle unfinished responsibilities later.";
+}
+
+if(value === "C") {
+result.innerHTML =
+"<strong>Future C:</strong> You gain flexibility now, but delaying urgent responsibilities increases the probability of stress and deadline pressure.";
+}
+
+}
+
+function resetApp() {
+
+document.getElementById("scenario").value = "";
+
+document.getElementById("results").style.display = "none";
+
+window.scrollTo({
+top: 0,
+behavior: "smooth"
+});
+
+}
+
+</script>
+
+</body>
+</html>
