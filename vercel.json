@@ -2,7 +2,20 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "pnpm build:vercel",
   "outputDirectory": "dist/public",
+  "functions": {
+    "api/index.ts": {
+      "includeFiles": [
+        "server/data/banking77-train.csv",
+        "server/data/banking77-categories.json",
+        "server/data/swebench-verified.json"
+      ]
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.ts"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

@@ -163,7 +163,7 @@ This repository includes a Vercel serverless Express entrypoint at `api/index.ts
 6. Add `NODE_ENV=production` in the Vercel environment variables if desired.
 7. Deploy.
 
-The frontend is served from the Vite build output and the Express API is served through the Vercel function at `api/index.ts`. After deployment, verify:
+The frontend is served from the Vite build output and the Express API is served through the Vercel function at `api/index.ts`. The Vercel configuration explicitly routes `/api/*` requests to that function and includes the Banking77 and SWE-bench files in the serverless bundle. After deployment, verify:
 
 ```text
 https://YOUR_PROJECT.vercel.app/api/health
