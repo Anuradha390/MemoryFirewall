@@ -151,6 +151,26 @@ docker run --rm -p 3000:3000 -e NODE_ENV=production memoryfirewall
 
 For a simple full-stack deployment, create a **Docker Web Service** on Render and connect this repository. Render will build the included `Dockerfile` and run the production server.
 
+## Vercel deployment
+
+This repository includes a Vercel serverless Express entrypoint at `api/index.ts` and a Vercel configuration at `vercel.json`.
+
+1. Import this GitHub repository into [Vercel](https://vercel.com/new).
+2. Keep the project root as the repository root.
+3. Use the `Vite` framework preset, or leave the detected preset unchanged.
+4. Keep the build command as `pnpm build:vercel`.
+5. Keep the output directory as `dist/public`.
+6. Add `NODE_ENV=production` in the Vercel environment variables if desired.
+7. Deploy.
+
+The frontend is served from the Vite build output and the Express API is served through the Vercel function at `api/index.ts`. After deployment, verify:
+
+```text
+https://YOUR_PROJECT.vercel.app/api/health
+```
+
+The response should contain `ok: true` and `service: memoryfirewall`. The demo repository is in-memory, so serverless restarts reset demo users, approvals, imported memories, and run history.
+
 ## Safety and production notes
 
 This repository is a functional prototype. The demo repository is in-memory, so process restarts reset demo users, approvals, imported memories, and run history. Before production use, add durable storage, enterprise authentication, RBAC, encrypted audit logs, rate limiting, privacy controls, and hardened connectors.
